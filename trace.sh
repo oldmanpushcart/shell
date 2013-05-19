@@ -1,5 +1,9 @@
 #!/bin/ksh
 
+# write by	: oldmanpushcart@gmail.com
+# date		: 2012-05-19
+# version	: 0.05
+
 typeset top=${1:-10}
 typeset pid=${2:-$(pgrep -u $USER java)}
 typeset tmp_file=/tmp/java_$pid_$$.trace
