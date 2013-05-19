@@ -5,7 +5,7 @@
 # version	: 0.05
 
 typeset top=${1:-10}
-typeset pid=${2:-$(pgrep -u $USER java)}
+typeset pid=${2:-$(pgrep -u $USER java|head -1)}
 typeset tmp_file=/tmp/java_$pid_$$.trace
 
 $JAVA_HOME/bin/jstack $pid > $tmp_file
