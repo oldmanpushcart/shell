@@ -14,8 +14,9 @@ function FindProxyForURL(url, host){
     var RESULT_SOCKS5 = "SOCKS5 localhost:3658";
     
     if( localHostOrDomainIs(host,"google.com")
-      || localHostOrDomainIs(host,"facebook.com") 
-      || localHostOrDomainIs(host,"twitter.com") 
+        || localHostOrDomainIs(host,"google.com.hk")
+        || localHostOrDomainIs(host,"facebook.com") 
+        || localHostOrDomainIs(host,"twitter.com") 
       ) {
       return RESULT_SOCKS5;
     }
