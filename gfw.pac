@@ -13,14 +13,34 @@ function FindProxyForURL(url, host){
     
     var RESULT_SOCKS5 = "SOCKS5 localhost:3658";
     
-    if( localHostOrDomainIs(host,"google.com")
-        || localHostOrDomainIs(host,"google.com.hk")
-        || localHostOrDomainIs(host,"facebook.com") 
-        || localHostOrDomainIs(host,"twitter.com") 
-      ) {
+    if( isNeedProxy(host) ) {
       return RESULT_SOCKS5;
     }
     
     return "DIRECT";
+    
+}
+
+/**
+ * 代理域名清单
+ * /
+var proxy_list = {
+    "google.com",
+    "google.com.hk",
+    "facebook.com",
+    "twitter.com"
+}
+
+/**
+ * 是否需要代理
+ * /
+function isNeedProxy(host) {
+    
+    for( var index=0;index<proxy_list.length;index++ ) {
+        if( localHostOrDomainIs(host, proxy_list[index]) ) {
+            return true;
+        }
+    }
+    return false;
     
 }
