@@ -17,7 +17,8 @@ function FindProxyForURL(url, host){
         "google.com",
         "google.com.hk",
         "facebook.com",
-        "twitter.com"
+        "twitter.com",
+        "youtube.com"
     ];
     
     for( index=0;index<proxy_list.length;index++ ) {
