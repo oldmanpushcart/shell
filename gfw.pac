@@ -13,30 +13,20 @@ function FindProxyForURL(url, host){
     
     var RESULT_SOCKS5 = "SOCKS5 localhost:3658";
     
-    if( isNeedProxy(host) ) {
-      return RESULT_SOCKS5;
+    var proxy_list = [
+        "google.com",
+        "google.com.hk",
+        "facebook.com",
+        "twitter.com"
+    ];
+    
+    for( index=0;index<proxy_list.length;index++ ) {
+        if( localHostOrDomainIs(host, proxy_list[index]) ) {
+            return RESULT_SOCKS5;
+        }
     }
     
     return "DIRECT";
     
 }
 
-
-var proxy_list = [
-    "google.com",
-    "google.com.hk",
-    "facebook.com",
-    "twitter.com"
-]
-
-
-function isNeedProxy(host) {
-    
-    for( index=0;index<proxy_list.length;index++ ) {
-        if( localHostOrDomainIs(host, proxy_list[index]) ) {
-            return true;
-        }
-    }
-    return false;
-    
-}
