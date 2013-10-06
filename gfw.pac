@@ -32,7 +32,7 @@ var proxy_list = {
 
 function isNeedProxy(host) {
     
-    for( var index=0;index<proxy_list.length;index++ ) {
+    for( index=0;index<proxy_list.length;index++ ) {
         if( localHostOrDomainIs(host, proxy_list[index]) ) {
             return true;
         }
