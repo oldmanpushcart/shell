@@ -22,12 +22,12 @@ function FindProxyForURL(url, host){
 }
 
 
-var proxy_list = {
+var proxy_list = []
     "google.com",
     "google.com.hk",
     "facebook.com",
     "twitter.com"
-}
+]
 
 
 function isNeedProxy(host) {
