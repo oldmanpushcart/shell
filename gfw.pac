@@ -21,9 +21,7 @@ function FindProxyForURL(url, host){
     
 }
 
-/**
- * 代理域名清单
- * /
+
 var proxy_list = {
     "google.com",
     "google.com.hk",
@@ -31,9 +29,7 @@ var proxy_list = {
     "twitter.com"
 }
 
-/**
- * 是否需要代理
- * /
+
 function isNeedProxy(host) {
     
     for( var index=0;index<proxy_list.length;index++ ) {
