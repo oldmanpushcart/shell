@@ -23,7 +23,7 @@ function FindProxyForURL(url, host){
     ];
     
     for( index=0;index<proxy_list.length;index++ ) {
-        if( dnsDomainIs(host, "."+proxy_list[index]) ) {
+        if( dnsDomainIs(host, proxy_list[index]) ) {
             return RESULT_SOCKS5;
         }
     }
