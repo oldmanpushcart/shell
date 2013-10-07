@@ -1,0 +1,8 @@
+#!/bin/ksh
+# author: dukun@taobao.com
+#   desc: 去掉SHELL中的颜色控制字符
+#while read line;
+#do
+#	print "$line"|awk 'gsub(/[[0-9]+m/,"")';
+#done;
+sed -i "s/\0-9;]\\+m//g"

@@ -1,0 +1,69 @@
+#!/bin/ksh
+#
+# xssh shell
+# author: dukun@taobao.com
+# 
+
+# 定义错误码----------------------------------
+typeset -irx ERROR_CODE_CHECK_ARGS=1;      # CMD参数错误
+# ------------------------------------------
+
+# 帮助信息
+function show_help
+{
+	print "
+Example:
+	echo 127.0.0.1|xssh -c "uptime"
+	echo 127.0.0.1|xssh -c "uptime" -f batch.bat
+	xssh -h
+Args:
+	-h, --help:
+		show you How To Use.
+	-c
+		the command
+	-f, --file:
+		setup the batch command file
+"
+}
+
+# 主程序开始
+function main
+{
+
+	# 执行解析出来的参数
+	typeset local xssh_command="";
+	typeset local xssh_batch_file="";
+	
+	# 解析命令行传来的参数
+	while getopts hf:c: OPTION
+	do
+		case "$OPTION" in
+			c)
+				xssh_command="$OPTARG";
+			;;
+			f)
+				xssh_batch_file="$OPTARG";
+			;;
+			\?)
+				show_help;
+				exit;
+			;;
+		esac;
+	done;
+	
+	# 如果没指定-c或-f参数则不需要执行
+	if [[ -z $xssh_command && -z $xssh_batch_file ]]; then
+		show_help;
+		exit;
+	fi
+	
+	# 从管道中读取参数信息
+	while read ip;
+	do
+		echo "====================$ip====================" 
+		echo "$xssh_command" | expect xssh.ex $HOME/.xssh "$ip"
+	done;
+	
+}
+
+main "$@"
