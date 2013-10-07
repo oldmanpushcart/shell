@@ -1,0 +1,290 @@
+# $HOME/.hostprofile/hostprofile.conf
+# 
+# author : dukun@taobao.com
+# 
+# <列id>.<列属性>=<列属性值>
+# 
+# xxx称为列id，列得所有必填项必须填写，否则默认会被忽略
+# 
+# 必填项
+#   xxx.lab=列名
+#   xxx.idx=列排序。格式col-subcol,如a-1,a-2将会被合并为a1/2
+#   xxx.wid=列宽度
+#   xxx.cmd=执行命令
+#   xxx.dsc=列值解释
+# 选填项
+#   xxx.lmt.up=告警阀值上限，超过上限则告警！内容为数值，也可以为另一列的列id。
+#   xxx.lmt.dw=告警阀值下限，低于下限则告警！内容为数值，也可以为另一列的列id。
+#   xxx.lmt.rx=告警阀值正则表达式；满足正则表达式的值内容立即告警！
+#   xxx.info.color=INFO级别的文字颜色，颜色定义：30黑,31红,32绿,33黄,34蓝,35紫,36青,37灰。
+#   xxx.warn.color=WARN级别的文字颜色，颜色定义同上。
+
+
+# IP地址
+ip.lab=IP
+ip.idx=a1
+ip.wid=16
+ip.cmd=hostname -i
+ip.dsc=主机IP地址
+ip.info.color=36
+
+# Load
+load.lab=LD
+load.wid=7
+load.idx=a3-1
+#load.lmt.up=cpu_count
+load.cmd=uptime|grep -Eo "load average:.*"|awk -F",|:" '{printf("%0.2f\n",$2);}'
+load.dsc=主机LOAD
+
+# Cpu Count
+#cpu_count.lab=CC
+#cpu_count.idx=a3-2
+#cpu_count.wid=4
+#cpu_count.cmd=cat /proc/cpuinfo|grep processor|wc -l
+#cpu_count.dsc=主机处理器个数
+#cpu_count.info.color=33
+
+# Java Thread Count
+jtc.lab=JTC
+jtc.idx=a4
+jtc.wid=6
+jtc.cmd=ps -ef | grep java|grep ".default"|grep -v grep|awk '{print $2}'|xargs -I{} ls /proc/{}/task|wc -l
+jtc.dsc=Java线程数
+jtc.lmt.up=550
+
+# CMS GC Times
+#cms_times.lab=GC:t
+#cms_times.idx=a41-1
+#cms_times.wid=4
+#cms_times.cmd=date +%Y-%m-%d|xargs -I{} grep -hE {} /home/admin/logs/gc.log* 2>/dev/null|grep "CMS-initial-mark: "|awk -F "T" '{print $1}'|wc -l
+#cms_times.dsc=当天CMS GC次数
+#cms_times.lmt.up=y_cms_times
+
+# Yesterday CMS GC Times
+#y_cms_times.lab=GC:y
+#y_cms_times.idx=a41-2
+#y_cms_times.wid=4
+#y_cms_times.cmd=date -d last-day +%Y-%m-%d|xargs -I{} grep -hE {} /home/admin/logs/gc.log* 2>/dev/null|grep "CMS-initial-mark: "|awk -F "T" '{print $1}'|wc -l
+#y_cms_times.dsc=昨天CMS GC次数
+#y_cms_times.info.color=33
+
+# ICDB CONNECT COUNT
+db_conn.lab=DBCC
+db_conn.wid=6
+db_conn.idx=a42
+db_conn.cmd=netstat -an|awk '$5~/:3306$/&&$6~/ESTABLISHED/'|wc -l
+db_conn.dsc=MySQL连接数量
+
+# ICDB COST
+db_cost.lab=COST@DB
+db_cost.wid=10
+db_cost.idx=a43
+db_cost.cmd=tail -1000 /home/admin/itemcenter/logs/misc/icdbMonitor.log|awk '$1~/icdb[0-9]+/{s[$1]=$5;}END{for(i in s){if(s[i]>=mc){mc=s[i];mi=i}}printf("%s@%02d\n",mc,substr(mi,5))}'
+db_cost.dsc=数据库超时告警ICDB/COST
+db_cost.lmt.rx=[0-9]+\/[4-9]\.[0-9]+
+
+# HSF Request Count
+hsf_req.lab=HFSQ
+hsf_req.wid=6
+hsf_req.idx=a44
+hsf_req.cmd=netstat -an|awk '$4~/:12200$/{print $0}'|wc -l
+hsf_req.dsc=HSF请求数量
+
+# DAOException from itemcenter.log
+dao_ex.lab=DAO@Ex:t
+dao_ex.wid=6
+dao_ex.idx=a5-1
+dao_ex.cmd=grep -c "DAOException" /home/admin/itemcenter/logs/itemcenter.log 2>/dev/null
+dao_ex.dsc=当天DAO异常数
+dao_ex.lmt.up=ydao_ex
+
+# Yesterday DAO
+ydao_ex.lab=DAO@Ex:y
+ydao_ex.wid=6
+ydao_ex.idx=a5-2
+ydao_ex.cmd=grep -c "DAOException" /home/admin/itemcenter/logs/itemcenter.log.$(date +%Y-%m-%d --date=yesterday) 2>/dev/null
+ydao_ex.dsc=昨天DAO异常数
+ydao_ex.info.color=33
+
+# Exception from hsf.log
+hsf_ex.lab=HSF@Ex:t
+hsf_ex.wid=6
+hsf_ex.idx=a6-1
+hsf_ex.cmd=grep -c "Exception" /home/admin/itemcenter/logs/hsf.log 2>/dev/null
+hsf_ex.dsc=当天HSF中的异常数
+hsf_ex.lmt.up=y_hsf_ex
+
+# Yesterday EX
+y_hsf_ex.lab=HSF@Ex:y
+y_hsf_ex.wid=6
+y_hsf_ex.idx=a6-2
+y_hsf_ex.cmd=grep -c "Exception" /home/admin/itemcenter/logs/hsf.log.$(date +%Y-%m-%d --date=yesterday) 2>/dev/null
+y_hsf_ex.dsc=昨天HSF中的异常数
+y_hsf_ex.info.color=33
+
+# Discard from tddl-replication.log
+#disc.lab=TDDL@DI:t
+#disc.wid=6
+#disc.idx=a7-1
+#disc.cmd=find /home/admin/it*/logs/tddl/ -daystart -mtime 0 -name "tddl-replication.log"|xargs grep -hc discarded 2>/dev/null
+#disc.dsc=当天TDDL复制日志中丢弃的记录数
+#disc.lmt.up=ydisc
+
+# Yesterday DISCARD
+#ydisc.lab=TDDL@DI:y
+#ydisc.wid=7
+#ydisc.idx=a7-2
+#ydisc.cmd=find /home/admin/it*/logs/tddl/ -daystart -mtime 1 -name "tddl-replication.log*"|xargs grep -hc discarded 2>/dev/null
+#ydisc.dsc=昨天TDDL复制日志中丢弃的记录数
+#ydisc.info.color=33
+
+# Search Engine Timeout
+#set.lab=SRC@TO:t
+#set.wid=7
+#set.idx=a8-1
+#set.cmd=find /home/admin/it*/logs -daystart -mtime 0 -name "itemcenter.log"|xargs grep -hc "searchengine.SearchEngine" 2>/dev/null
+#set.dsc=当天搜索超时数量
+#set.lmt.up=yset
+
+# Yesterday SET
+#yset.lab=SRC@TO:y
+#yset.wid=6
+#yset.idx=a8-2
+#yset.cmd=find /home/admin/it*/logs -daystart -mtime 1 -name "itemcenter.log*"|xargs grep -hc "searchengine.SearchEngine" 2>/dev/null
+#yset.dsc=昨天搜索超时数量
+#yset.info.color=33
+
+# Search Engint Exception
+#see.lab=SRC@Ex:t
+#see.wid=6
+#see.idx=a9-1
+#see.cmd=find /home/admin/it*/logs -daystart -mtime 0 -name "itemcenter.log"|xargs grep -hc "SearchEngineException" 2>/dev/null
+#see.dsc=当天搜索异常数量
+#see.lmt.up=ysee
+
+# Yesterday SEE
+#ysee.lab=SRC@Ex:y
+#ysee.wid=6
+#ysee.idx=a9-2
+#ysee.cmd=find /home/admin/it*/logs -daystart -mtime 1 -name "itemcenter.log*"|xargs grep -hc "SearchEngineException" 2>/dev/null
+#ysee.dsc=昨天搜索异常数量
+#ysee.info.color=33
+
+# TFS Exception
+tfs_ex.lab=TFS@Ex:t
+tfs_ex.wid=6
+tfs_ex.idx=b1-1
+tfs_ex.cmd=grep -c "get description from tfs" /home/admin/itemcenter/logs/itemcenter.log 2>/dev/null
+tfs_ex.dsc=当天TFS失败数量
+tfs_ex.lmt.up=ytfs_ex
+
+
+# Yesterday TE
+ytfs_ex.lab=TFS@Ex:y
+ytfs_ex.wid=5
+ytfs_ex.idx=b1-2
+ytfs_ex.cmd=grep -c "get description from tfs" /home/admin/itemcenter/logs/itemcenter.log.$(date +%Y-%m-%d --date=yesterday) 2>/dev/null
+ytfs_ex.dsc=昨天TFS异常数量
+ytfs_ex.info.color=33
+
+# Tair Exception
+tair_ex.lab=TAR@Ex:t
+tair_ex.wid=6
+tair_ex.idx=b2-1
+tair_ex.cmd=grep -c "TairClientException" /home/admin/itemcenter/logs/itemcenter.log 2>/dev/null
+tair_ex.dsc=当天TAIR失败数量
+tair_ex.lmt.up=ytair_ex
+
+
+# Yesterday TE
+ytair_ex.lab=TAR@Ex:y
+ytair_ex.wid=5
+ytair_ex.idx=b2-2
+ytair_ex.cmd=grep -c "TairClientException" /home/admin/itemcenter/logs/itemcenter.log.$(date +%Y-%m-%d --date=yesterday) 2>/dev/null
+ytair_ex.dsc=昨天TAIR异常数量
+ytair_ex.info.color=33
+
+# Vsearch Exception
+vsearch_ex.lab=VSH@Ex:t
+vsearch_ex.wid=6
+vsearch_ex.idx=b3-1
+vsearch_ex.cmd=grep -c "Exception@vsearchQuery" /home/admin/itemcenter/logs/itemcenter.log 2>/dev/null
+vsearch_ex.dsc=当天Vsearch失败数量
+vsearch_ex.lmt.up=yvsearch_ex
+
+
+# Yesterday TE
+yvsearch_ex.lab=VSH@Ex:y
+yvsearch_ex.wid=5
+yvsearch_ex.idx=b3-2
+yvsearch_ex.cmd=grep -c "Exception@vsearchQuery" /home/admin/itemcenter/logs/itemcenter.log.$(date +%Y-%m-%d --date=yesterday) 2>/dev/null
+yvsearch_ex.dsc=昨天Vsearch异常数量
+yvsearch_ex.info.color=33
+
+# IC Exception
+ic_ex.lab=ICE@Ex:t
+ic_ex.wid=6
+ic_ex.idx=b4-1
+ic_ex.cmd=grep -c "IcException" /home/admin/itemcenter/logs/itemcenter.log 2>/dev/null
+ic_ex.dsc=当天IC失败数量
+ic_ex.lmt.up=yic_ex
+
+
+# Yesterday TE
+yic_ex.lab=ICE@Ex:y
+yic_ex.wid=5
+yic_ex.idx=b4-2
+yic_ex.cmd=grep -c "IcException" /home/admin/itemcenter/logs/itemcenter.log.$(date +%Y-%m-%d --date=yesterday) 2>/dev/null
+yic_ex.dsc=昨天IC异常数量
+yic_ex.info.color=33
+
+# JUSTICE Exception
+justice_ex.lab=JST@Ex:t
+justice_ex.wid=6
+justice_ex.idx=b5-1
+justice_ex.cmd=grep -c "JusticeException" /home/admin/itemcenter/logs/itemcenter.log 2>/dev/null
+justice_ex.dsc=当天justice失败数量
+justice_ex.lmt.up=yjustice_ex
+
+
+# Yesterday TE
+yjustice_ex.lab=JST@Ex:y
+yjustice_ex.wid=5
+yjustice_ex.idx=b5-2
+yjustice_ex.cmd=grep -c "JusticeException" /home/admin/itemcenter/logs/itemcenter.log.$(date +%Y-%m-%d --date=yesterday) 2>/dev/null
+yjustice_ex.dsc=昨天justice异常数量
+yjustice_ex.info.color=33
+
+# NullPOINT Exception
+npe_ex.lab=NPE@Ex:t
+npe_ex.wid=6
+npe_ex.idx=b6-1
+npe_ex.cmd=grep -c "NullPointerException" /home/admin/itemcenter/logs/itemcenter.log 2>/dev/null
+npe_ex.dsc=当天空指针失败数量
+npe_ex.lmt.up=ynpe_ex
+
+
+# Yesterday TE
+ynpe_ex.lab=NPE@Ex:y
+ynpe_ex.wid=5
+ynpe_ex.idx=b6-2
+ynpe_ex.cmd=grep -c "NullPointerException" /home/admin/itemcenter/logs/itemcenter.log.$(date +%Y-%m-%d --date=yesterday) 2>/dev/null
+ynpe_ex.dsc=昨天空指针异常数量
+ynpe_ex.info.color=33
+
+# ALL Exception
+exp_ex.lab=EXP@Ex:t
+exp_ex.wid=6
+exp_ex.idx=b7-1
+exp_ex.cmd=grep -c "Exception" /home/admin/itemcenter/logs/itemcenter.log 2>/dev/null
+exp_ex.dsc=当天异常数量
+exp_ex.lmt.up=yexp_ex
+
+
+# Yesterday TE
+yexp_ex.lab=EXP@Ex:y
+yexp_ex.wid=5
+yexp_ex.idx=b7-2
+yexp_ex.cmd=grep -c "Exception" /home/admin/itemcenter/logs/itemcenter.log.$(date +%Y-%m-%d --date=yesterday) 2>/dev/null
+yexp_ex.dsc=昨天异常数量
+yexp_ex.info.color=33
