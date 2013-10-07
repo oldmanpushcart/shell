@@ -1,0 +1,103 @@
+#!/bin/ksh
+# author dukun@taobao.com
+# desc 日志记录脚本，将输出的内容记录到日志文件中，按日期分隔文件xxx.log.YYYY-MM-DD
+# 日志内容格式:[YYYY-MM-DD 24HH:MM:SS 进程ID]日志内容
+
+# 定义错误码----------------------------------
+typeset -irx ERROR_CODE_SUCCESSED=0;       # 成功
+typeset -irx ERROR_CODE_CHECK_ARGS=1;      # CMD参数错误
+typeset -irx ERROR_CODE_CANT_CREATE_FILE=2;# 创建日志文件失败
+# ------------------------------------------
+
+# 定义变量
+LOG_FILE_DEF="$HOME/log/log.log";
+
+# 记录日志
+# 参数$1:日志文件记录路径
+function log
+{
+	typeset -r local log_file="$1";
+	typeset -r local log_dir=$(echo "$log_file"|awk 'gsub(/\/[^\/]*$/,"")');
+	typeset local datestamp;
+	typeset local timestamp;
+	typeset local log_filename;
+	typeset local err_msg;
+	while read line;do
+		timestamp=$(date +%H:%M:%S);
+		datestamp=$(date +%Y-%m-%d);
+		log_filename="$log_file.$datestamp";
+		# 创建日志目录
+		if [[ ! -d "$log_dir" ]]; then
+			err_msg=$(echo "$log_dir"|xargs mkdir -p);
+			if [[ ! 0 -eq $? ]]; then
+				echo "创建日志文件目录路径失败:$err_msg" 1>&2;
+				exit "$ERROR_CODE_CANT_CREATE_FILE";
+			fi
+		fi
+	
+		# 创建日志文件
+		if [[ ! -f "$log_filename" ]];then
+			err_msg=$(touch "$log_filename");
+			if [[ ! 0 -eq $? ]];then
+				echo "创建日志文件$log_filename失败:$err_msg" 1>&2;
+				exit "$ERROR_CODE_CANT_CREATE_FILE";
+			fi
+		fi
+		print "$timestamp $line" >> "$log_filename";
+	done;
+}
+
+# 输出帮助信息
+function help
+{
+	print "
+例子:
+	uptime|log -f /tmp/out.log
+参数:
+	-h, --help:
+		输出帮助说明!
+	-f, --file:
+		设置输出日志文件,按日期自动分隔,文件名格式为<日志文件名>.YYYY-MM-DD
+"
+}
+
+# 主程序开始
+function main
+{
+
+	# 解析命令行传来的参数
+	typeset local cmd_arg_exp=$(getopt -o hf: --long help,file: -- ${@})
+	if [[ $? != 0 ]];then
+		show_help;
+		exit "$ERROR_CODE_CHECK_ARGS";
+	fi
+	eval set -- "$cmd_arg_exp";
+
+	# 执行解析出来的参数
+	typeset -i local repeat_time=1;
+	typeset local log_file="";
+	while true;
+	do
+		case "$1" in
+			-f|--file)
+				log_file="$2"
+				shift 2;
+			;;
+			-h|--help)
+				init;
+				show_help;
+				shift;
+				exit;
+			;;
+			--)
+				shift;
+				break;
+			;;
+		esac;
+	done;
+	
+	[[ -z "$log_file" ]]&&log_file="$LOG_FILE_DEF";
+	log "$log_file";
+}
+
+main "$@"
