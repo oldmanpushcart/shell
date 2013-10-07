@@ -1,0 +1,10 @@
+#!/bin/ksh 
+# author: dukun@taobao.com
+#   date: 2011-06-25
+
+typeset GROUP="logisticscenter"
+
+armory -g "$GROUP"\
+    |awk  'BEGIN{ORS=""}{if($0~/^\-/&&1!=NR)o=o"\n";if($1~/(nodename|dns_ip|state|rack|site|nodoegroup|vmparent|nodegroup)/)o=o$2"\t"}END{print o"\n"}'\
+    |awk '{if(NF == 6)printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\n",$1,$2,$3,$4,$5,$6,"-");else print $0;}'
+    |awk '$6=='"$GROUP"''
