@@ -4,60 +4,60 @@
 # for JULY
 # 
 
-## è„šæœ¬å¸¸é‡å®šä¹‰éƒ¨åˆ†
+## ½Å±¾³£Á¿¶¨Òå²¿·Ö
 
 
-# å®šä¹‰é”™è¯¯ç ---------------------------------
-typeset -irx ERROR_CODE_SUCCESSED=0;      # æˆåŠŸ
-typeset -irx ERROR_CODE_CHECK_ARGS=1;     # CMDå‚æ•°é”™è¯¯
-typeset -irx ERROR_CODE_PARSE_CONF=2;     # é…ç½®æ–‡ä»¶è§£æžé”™è¯¯
-typeset -irx ERROR_CODE_CONF_NOT_FOUND=3; # é…ç½®æ–‡ä»¶æœªæ‰¾åˆ°
+# ¶¨Òå´íÎóÂë---------------------------------
+typeset -irx ERROR_CODE_SUCCESSED=0;      # ³É¹¦
+typeset -irx ERROR_CODE_CHECK_ARGS=1;     # CMD²ÎÊý´íÎó
+typeset -irx ERROR_CODE_PARSE_CONF=2;     # ÅäÖÃÎÄ¼þ½âÎö´íÎó
+typeset -irx ERROR_CODE_CONF_NOT_FOUND=3; # ÅäÖÃÎÄ¼þÎ´ÕÒµ½
 # -----------------------------------------
 
-# å®šä¹‰è¾“å‡ºæ ¼å¼å­—ç¬¦-------------------
-typeset -r COLUMN_BEGIN_CHAR="+";# åˆ—å¼€å¤´æ‹è§’å­—ç¬¦
-typeset -r COLUMN_FILLW_CHAR="-";# åˆ—å®½åº¦å¡«å……å­—ç¬¦
-typeset -r COLUMN_FILLH_CHAR="|";# åˆ—é«˜åº¦å¡«å……å­—ç¬¦
-typeset -r COLUMN_SPLIT_CHAR="/";# åˆ—åŒåˆ—åˆ†éš”å­—ç¬¦
+# ¶¨ÒåÊä³ö¸ñÊ½×Ö·û-------------------
+typeset -r COLUMN_BEGIN_CHAR="+";# ÁÐ¿ªÍ·¹Õ½Ç×Ö·û
+typeset -r COLUMN_FILLW_CHAR="-";# ÁÐ¿í¶ÈÌî³ä×Ö·û
+typeset -r COLUMN_FILLH_CHAR="|";# ÁÐ¸ß¶ÈÌî³ä×Ö·û
+typeset -r COLUMN_SPLIT_CHAR="/";# ÁÐÍ¬ÁÐ·Ö¸ô×Ö·û
 # --------------------------------
 
-# HostProfileçš„ç›®å½•æ–‡ä»¶ç»“æž„å®šä¹‰----------------------------
-typeset HP_HOME_DIR="$HOME/.hp";                      # ä¸»ç›®å½•ï¼Œé‡Œé¢å­˜æ”¾é…ç½®å’Œä¸´æ—¶æ–‡ä»¶
-typeset HP_TEMP_DIR="$HP_HOME_DIR/temp";              # ä¸´æ—¶æ–‡ä»¶å­˜æ”¾ç›®å½•
-typeset HP_CONF_FILE="$ICWORK_HOME/.local/conf/hpconf/default.hp";          # é»˜è®¤é…ç½®æ–‡ä»¶å­˜æ”¾åœ°å€
-typeset HP_SHEL_FILE="$HP_TEMP_DIR/profile_$$.shell"; # æ‰¹é‡è„šæœ¬profileä¸´æ—¶è„šæœ¬
+# HostProfileµÄÄ¿Â¼ÎÄ¼þ½á¹¹¶¨Òå----------------------------
+typeset HP_HOME_DIR="$HOME/.hp";                      # Ö÷Ä¿Â¼£¬ÀïÃæ´æ·ÅÅäÖÃºÍÁÙÊ±ÎÄ¼þ
+typeset HP_TEMP_DIR="$HP_HOME_DIR/temp";              # ÁÙÊ±ÎÄ¼þ´æ·ÅÄ¿Â¼
+typeset HP_SHEL_FILE="$HP_TEMP_DIR/profile_$$.shell"; # ÅúÁ¿½Å±¾profileÁÙÊ±½Å±¾
+typeset HP_CONF_FILE="$HOME/.hp/default.hp";          # Ä¬ÈÏÅäÖÃÎÄ¼þ´æ·ÅµØÖ·
 # -----------------------------------------------------
 
 
-# é…ç½®æ–‡ä»¶è§£æžå®šä¹‰---------------------------------------------------------------
-# CONFé…ç½®æ–‡ä»¶è§£æžç»“æžœ
+# ÅäÖÃÎÄ¼þ½âÎö¶¨Òå---------------------------------------------------------------
+# CONFÅäÖÃÎÄ¼þ½âÎö½á¹û
 typeset PROFILE_CONF="";
-# ç”¨äºŽåˆ†éš”åˆ—è§£æžå‡ºæ¥çš„æ•°æ®
+# ÓÃÓÚ·Ö¸ôÁÐ½âÎö³öÀ´µÄÊý¾Ý
 typeset PROFILE_CONF_SPLIT="DUKUN@TAOBAO.COM@HP";
-# åˆ—é…ç½®é¡¹ä¸­å¿…å¡«éƒ¨åˆ†
+# ÁÐÅäÖÃÏîÖÐ±ØÌî²¿·Ö
 typeset PROFILE_CONF_NOT_NULLS=".idx,.lab,.wid,.cmd,.dsc";
-# åˆ—é…ç½®é¡¹ä¸­é€‰å¡«éƒ¨åˆ†
+# ÁÐÅäÖÃÏîÖÐÑ¡Ìî²¿·Ö
 typeset PROFILE_CONF_NULLS=".lmt.up,.lmt.dw,.lmt.rx,.info.color,.warn.color";
 # ----------------------------------------------------------------------------
 
 
-# è¾“å‡ºæŽ§åˆ¶å®šä¹‰------------------------
-typeset PROFILE_HOST_LIST="";     # å­˜æ”¾éœ€è¦è¢«å¾ªçŽ¯ç›‘æŽ§çš„ä¸»æœºåˆ—è¡¨
-typeset PRINT_HEADER_EACH_LINE=40;# æ¯è¾“å‡ºå¤šå°‘è¡Œæ•°æ®æ‰“å°ä¸€æ¬¡åˆ—å¤´
-typeset PRINT_LINE_COUNTER=0;     # è¾“å‡ºè¡Œè®¡æ•°å™¨
-typeset -i REPEAT_TIMES=0;        # å‘½ä»¤é‡å¤æ‰§è¡Œæ¬¡æ•°,0æ¬¡è¡¨ç¤ºæ— é™é‡å¤
+# Êä³ö¿ØÖÆ¶¨Òå------------------------
+typeset PROFILE_HOST_LIST="";     # ´æ·ÅÐèÒª±»Ñ­»·¼à¿ØµÄÖ÷»úÁÐ±í
+typeset PRINT_HEADER_EACH_LINE=40;# Ã¿Êä³ö¶àÉÙÐÐÊý¾Ý´òÓ¡Ò»´ÎÁÐÍ·
+typeset PRINT_LINE_COUNTER=0;     # Êä³öÐÐ¼ÆÊýÆ÷
+typeset -i REPEAT_TIMES=0;        # ÃüÁîÖØ¸´Ö´ÐÐ´ÎÊý,0´Î±íÊ¾ÎÞÏÞÖØ¸´
 # ---------------------------------
 
 
 
 
-## è„šæœ¬ä»£ç å¼€å§‹éƒ¨åˆ†
+## ½Å±¾´úÂë¿ªÊ¼²¿·Ö
 
-# è§£æžå¹¶ä¸”æ ¡éªŒCONFé…ç½®æ–‡ä»¶ï¼Œå¦‚æžœé…ç½®æ–‡ä»¶è§£æžå¤±è´¥åˆ™ç›´æŽ¥é€€å‡º
-# è¾“å‡ºæ ¼å¼é¡ºåº ID,IDX,LAB,WID,CMD,DSC,LMT.UP,LMT.DW,LMT.RX
+# ½âÎö²¢ÇÒÐ£ÑéCONFÅäÖÃÎÄ¼þ£¬Èç¹ûÅäÖÃÎÄ¼þ½âÎöÊ§°ÜÔòÖ±½ÓÍË³ö
+# Êä³ö¸ñÊ½Ë³Ðò ID,IDX,LAB,WID,CMD,DSC,LMT.UP,LMT.DW,LMT.RX
 function prase_profile_conf_file
 {
-	# è§£æžé…ç½®æ–‡ä»¶
+	# ½âÎöÅäÖÃÎÄ¼þ
 	PROFILE_CONF=$(
 		awk '/^[^#][^\.]+\.[^=]+=.*/{
 			i=index($0,"=");
@@ -77,7 +77,7 @@ function prase_profile_conf_file
 				print "";
 			}
 		} function checkNotNull(){
-			# æ ¡éªŒå¿…é€‰é¡¹æ˜¯å¦éƒ½å·²å¡«å†™
+			# Ð£Ñé±ØÑ¡ÏîÊÇ·ñ¶¼ÒÑÌîÐ´
 			for(idx in not_nulls){
 				if(!m[id not_nulls[idx]])
 					return 0;
@@ -88,15 +88,15 @@ function prase_profile_conf_file
 			n_cols=${PROFILE_CONF_NULLS} \
 			${HP_CONF_FILE}
 	);
-	#æ£€æŸ¥é…ç½®æ–‡ä»¶æ˜¯å¦åˆæ³•ï¼Œå¦‚æžœä¸åˆæ³•ç›´æŽ¥é€€å‡º
+	#¼ì²éÅäÖÃÎÄ¼þÊÇ·ñºÏ·¨£¬Èç¹û²»ºÏ·¨Ö±½ÓÍË³ö
 	if [[ -z $PROFILE_CONF ]]; then
-		echo "éžæ³•çš„é…ç½®æ–‡ä»¶ï¼Œè¯·æ ¸å¯¹!";
+		echo "·Ç·¨µÄÅäÖÃÎÄ¼þ£¬ÇëºË¶Ô!";
 		exit $ERROR_CODE_PARSE_CONF;
 	fi
 }
 
 
-# æž„é€ ç›‘æŽ§æ‰§è¡Œè„šæœ¬
+# ¹¹Ôì¼à¿ØÖ´ÐÐ½Å±¾
 function build_profile_shell
 {
 	#typeset local HP_TODAY=$(date +%Y-%m-%d);
@@ -109,23 +109,23 @@ function build_profile_shell
 }
 
 
-# è¾“å‡ºå¸®åŠ©ä¿¡æ¯
+# Êä³ö°ïÖúÐÅÏ¢
 function show_help
 {
 	print "
-ä¾‹å­: 
+Àý×Ó: 
 	hp -h
 	echo 172.24.24.92|hp
 	echo 172.24.24.92|hp -r 1
 	echo 172.24.24.92|hp -r 1 -f ic.default
-å‚æ•°:
+²ÎÊý:
 	-h, --help :
-		è¾“å‡ºå¸®åŠ©è¯´æ˜Ž!
+		Êä³ö°ïÖúËµÃ÷!
 	-r, --repeat :
-		è®¾ç½®é‡å¤æ¬¡æ•°ï¼Œé»˜è®¤æ˜¯æ— é™å¾ªçŽ¯
+		ÉèÖÃÖØ¸´´ÎÊý£¬Ä¬ÈÏÊÇÎÞÏÞÑ­»·
 	-f, --file :
-		èŽ·å–é…ç½®æ–‡ä»¶ï¼Œå¦‚æžœä¸æŒ‡å®šåˆ™ç”¨é»˜è®¤çš„
-åˆ—å®šä¹‰:"
+		»ñÈ¡ÅäÖÃÎÄ¼þ£¬Èç¹û²»Ö¸¶¨ÔòÓÃÄ¬ÈÏµÄ
+ÁÐ¶¨Òå:"
 	echo "$PROFILE_CONF"|awk -F"$PROFILE_CONF_SPLIT" '{
 		id=$1;
 		ids[id]=1;
@@ -139,17 +139,107 @@ function show_help
 			id=sortids[tA[ii]];
 			printf("\033[31m%10s\033[0m : %s\n",m[id".lab"],m[id".dsc"]);
 		}
-	} function sort_ids(sortidsidxA[1];
+	} function sort_ids(sortids,ids) {
+		# ¸ù¾ÝÁÐµÄidx¶ÔÁÐ½øÐÐÅÅÐò
+		for( id in ids ) {
+			sortids[m[id".idx"]]=id;
+		}
+		slen=asorti(sortids,tA);
+	}'	nn_cols="$PROFILE_CONF_NOT_NULLS"  \
+		n_cols="$PROFILE_CONF_NULLS"
+	
+}
+
+# ½Å±¾½áÊøÇåÀí
+function finish
+{
+	rm -f "$HP_SHEL_FILE";
+}
+
+# ÂÖÑ¯¼à¿ØÖ÷»ú
+# Õâ¶Îawk½Å±¾Ð´µÃ¹»Çº...ÀÁµÃÎ¬»¤ÁË
+function profile
+{
+	echo "$PROFILE_HOST_LIST"|while read host;
+	do
+		typeset local profile_vals=$(
+				cat "$HP_SHEL_FILE"|xssh -i $host\
+				|awk '/\.val=/{print $0"\n"}';
+		);
+		
+		typeset local merge=$(
+			echo "$PROFILE_CONF";
+			echo "$profile_vals";
+		);
+		
+		echo "$merge"|awk -F"$PROFILE_CONF_SPLIT" '/^.+$/{
+			if(NF==1){
+				# ´¦Àíval
+				i=index($0,"=");
+				m[substr($0,0,i-1)]=substr($0,i+1);
+			} else {
+				# ´¦ÀíÐÐ
+				id=$1;
+				ids[id]=1;
+				cols_len=split(nn_cols","n_cols,cols,",");
+				for(i=1;i<=cols_len;i++){
+					m[id cols[i]]=$(i+1);
+				}
+			}
+		}END{
+			sort_ids(sortids,ids);
+			if(!(line_counter%each_line)) {
+				print_header();
+			}
+			print_context();
+		} function info(msg,color) {
+			# Êä³öÕý³£ÐÅÏ¢
+			return "\033["(color?color:32)"m"(msg?msg:"-")"\033[0m";
+		} function warn(msg,color) {
+			# Êä³ö¾¯¸æÐÅÏ¢
+			return "\033["(color?color:31)"m"(msg?msg:"-")"\033[0m";
+		} function sort_ids(sortids,ids) {
+			# ¸ù¾ÝÁÐµÄidx¶ÔÁÐ½øÐÐÅÅÐò
+			for( id in ids ) {
+				sortids[m[id".idx"]]=id;
+			}
+			slen=asorti(sortids,tA);
+		} function is_merge_column(idx) {
+			# ÅÐ¶ÏÊÇ·ñÊÇºÍ²¢ÁÐ
+			return (idx~/^[^\-]*\-[^-]*$/);
+		} function is_need_commit_column(idx,col_idx,col_len){
+			# ÅÐ¶ÏÊÇ·ñÐèÒªÌá½»µ±Ç°ºÏ²¢ÁÐ
+			# Èç¹ûµ±Ç°ÁÐÊÇÎ´ÁÐ,ÔòÐèÒªÌá½»
+			if(col_idx==col_len) {
+				return 1;
+			}
+			
+			# ¼ì²éµ±Ç°ÁÐÊÇ·ñÊÇºÍ²¢ÁÐ£¬Èç¹û²»ÊÇÔòÖ±½ÓÌá½»
+			if(!is_merge_column(idx)) {
+				return 1;
+			}
+			
+			# È¡µÃÏÂÒ»ÁÐÐòÁÐ
+			next_id=sortids[tA[ii+1]];
+			next_idx=m[next_id".idx"];
+			
+			# ¼ì²éÏÂÒ»ÁÐÊÇ·ñ·ûºÏxx-yyµÄ¸ñÊ½,²»·ûºÏÔò±íÃ÷µ±Ç°ÁÐÐèÒªÌá½»
+			if(!is_merge_column(next_idx)) return 1;
+
+			# ÅÐ¶Ïµ±Ç°ÁÐºÍÏÂÒ»ÁÐÊÇ·ñÍ¬ÊôÓÚÒ»¸öºÍ²¢ÁÐ
+			# Èç¹û²»ÊôÓÚÔò±íÃ÷ÐèÒªÌá½»
+			split(next_idx,pfidxA,"-");
+			prefix_next_idx=pfidxA[1];
 			split(idx,pfidxA,"-");
 			prefix_idx=pfidxA[1];
 			if(prefix_next_idx!=prefix_idx) {
 				return 1;
 			}
 			
-			# å…¶ä»–æƒ…å†µå¯ä»¥è®¤ä¸ºä¸éœ€è¦æäº¤å’Œå¹¶åˆ—ï¼Œç»§ç»­åˆå¹¶
+			# ÆäËûÇé¿ö¿ÉÒÔÈÏÎª²»ÐèÒªÌá½»ºÍ²¢ÁÐ£¬¼ÌÐøºÏ²¢
 			return 0;
 		} function strcmp(stra,strb,_ARGVEND_,i,lena,lenb,mlen) {
-			# å‚ç…§Cè¯­è¨€ä¸­çš„strcmpå‡½æ•°
+			# ²ÎÕÕCÓïÑÔÖÐµÄstrcmpº¯Êý
 			lena=length(stra);
 			lenb=length(strb);
 			mlen=lena<lenb?lena:lenb;
@@ -160,40 +250,40 @@ function show_help
 			}
 			return mlen;
 		} function print_header() {
-			# æ¸…ç†åˆå¹¶æ ‡è®°
+			# ÇåÀíºÏ²¢±ê¼Ç
 			mcol="";mwid=0;mc=0;
-			# è¾“å‡ºåˆ—ä¿¡æ¯
+			# Êä³öÁÐÐÅÏ¢
 			col="";
 			for(ii=1;ii<=slen;ii++){
 				id=sortids[tA[ii]];
 				idx=m[id".idx"];
 				
-				# åˆå¹¶åˆ—å¤´éƒ¨
+				# ºÏ²¢ÁÐÍ·²¿
 				# -----------------------------------------
 				if( is_need_commit_column(idx,ii,slen) ) {
-					# éœ€è¦æäº¤æäº¤åˆ—
+					# ÐèÒªÌá½»Ìá½»ÁÐ
 					if(is_merge_column(idx)) {
-						# æäº¤å’Œå¹¶åˆ—
+						# Ìá½»ºÍ²¢ÁÐ
 						merge_column_ids[mc++]=id;
 						for(imc=0;imc<mc;imc++){
 							mid=merge_column_ids[imc];
 							mlab=m[mid".lab"];
-							# åˆå¹¶mlabå’Œlabä¸­ç›¸åŒçš„å­—ç¬¦
+							# ºÏ²¢mlabºÍlabÖÐÏàÍ¬µÄ×Ö·û
 							mlab_dif=strcmp(mcol,mlab);
 							mcol=mcol (mcol?cstc:"");
 							mcol=mcol substr(mlab,mlab_dif);
 							mwid=mwid+m[mid".wid"];
 						}
 						scol=cbnc mcol;wid=mwid;
-						# æ¸…ç†åˆå¹¶æ ‡è®°
+						# ÇåÀíºÏ²¢±ê¼Ç
 						mcol="";mwid=0;mc=0;
 					} else {
-						# æäº¤æ™®é€šåˆ—
+						# Ìá½»ÆÕÍ¨ÁÐ
 						scol=cbnc m[id".lab"];
 						wid=m[id".wid"];
 					}
 				} else {
-					# è®°å½•ä¸‹éœ€è¦åˆå¹¶çš„åˆ—
+					# ¼ÇÂ¼ÏÂÐèÒªºÏ²¢µÄÁÐ
 					merge_column_ids[mc++]=id;
 					continue;
 				}
@@ -207,7 +297,7 @@ function show_help
 			}
 			print col;
 		} function format_value(id) {
-			# æ ¼å¼åŒ–è¾“å‡ºå€¼
+			# ¸ñÊ½»¯Êä³öÖµ
 			msg="";
 			val=m[id".val"];
 			up=m[id".lmt.up"];
@@ -216,17 +306,17 @@ function show_help
 			iic=m[id".info.color"];
 			iwc=m[id".warn.color"];
 			if(rx) {
-				# å¯ç”¨å¢žåˆ™è¡¨è¾¾å¼åˆ¤æ–­
+				# ÆôÓÃÔöÔò±í´ïÊ½ÅÐ¶Ï
 				msg=(val~rx)?warn(val,iwc):info(val,iic);
 			} else if(!msg&&up) {
 				upval=up;
-				# å¯ç”¨ä¸Šé™åˆ¤æ–­,å¦‚æžœupçš„å€¼ä¸æ˜¯æ•°å­—åˆ™è®¤ä¸ºæ˜¯åˆ—å˜é‡
+				# ÆôÓÃÉÏÏÞÅÐ¶Ï,Èç¹ûupµÄÖµ²»ÊÇÊý×ÖÔòÈÏÎªÊÇÁÐ±äÁ¿
 				if(up!~/^[0-9]*\.?[0-9]*$/){
 					upval=m[up".val"];
 				}
 				msg=(upval&&(val+0)<=(upval+0))?info(val,iic):warn(val,iwc);
 			} else if(!msg&&dw) {
-				# å¯ç”¨ä¸‹é™åˆ¤æ–­,å¦‚æžœdwçš„å€¼ä¸æ˜¯æ•°å­—åˆ™è®¤ä¸ºæ˜¯åˆ—å˜é‡
+				# ÆôÓÃÏÂÏÞÅÐ¶Ï,Èç¹ûdwµÄÖµ²»ÊÇÊý×ÖÔòÈÏÎªÊÇÁÐ±äÁ¿
 				if(dw!~/^[0-9]*\.?[0-9]*$/){
 					dwval=m[dw".val"];
 				}
@@ -236,14 +326,14 @@ function show_help
 			}
 			return msg;
 		} function print_context() {
-			# æ¸…ç†åˆå¹¶æ ‡è®°
+			# ÇåÀíºÏ²¢±ê¼Ç
 			mmsg="";mwid=0;mc=0;
-			# è¾“å‡ºæ•°å€¼
+			# Êä³öÊýÖµ
 			for(ii=1;ii<=slen;ii++){
 				id=sortids[tA[ii]];
 				idx=m[id".idx"];
 				
-				# åˆå¹¶åˆ—è¾“å‡ºå€¼
+				# ºÏ²¢ÁÐÊä³öÖµ
 				# -----------------------------------------
 				if( is_need_commit_column(idx,ii,slen) ) {
 					if(is_merge_column(idx)) {
@@ -252,7 +342,7 @@ function show_help
 							mid=merge_column_ids[imc];
 							mmsg=mmsg (mmsg?cstc:"");
 							mmsg=mmsg format_value(mid);
-							# 9:8çš„æ„æ€æ˜¯è¦è¡¥å¿ä¸€ä½/ç¬¦
+							# 9:8µÄÒâË¼ÊÇÒª²¹³¥Ò»Î»/·û
 							mwid=mwid+m[mid".wid"]+(imc<mc-1?9:8);
 						}
 						msg=mmsg;wid=mwid;
@@ -283,11 +373,11 @@ function show_help
 	done;
 }
 
-# é‡å¤æ‰§è¡Œè½®è¯¢ç›‘æŽ§ä¸»æœº
+# ÖØ¸´Ö´ÐÐÂÖÑ¯¼à¿ØÖ÷»ú
 function repeat_profile
 {
 	
-	# èŽ·å–ä¸»æœºåˆ—è¡¨
+	# »ñÈ¡Ö÷»úÁÐ±í
 	while read host;do
 		PROFILE_HOST_LIST=$(
 			echo $host\
@@ -296,7 +386,7 @@ function repeat_profile
 		);
 	done;
 
-	# è®¾ç½®æ‰§è¡Œæ¬¡æ•°
+	# ÉèÖÃÖ´ÐÐ´ÎÊý
 	typeset -i times=$(($REPEAT_TIMES));
 	while true;
 	do
@@ -307,69 +397,57 @@ function repeat_profile
 }
 
 
-# è„šæœ¬åˆå§‹åŒ–
+# ½Å±¾³õÊ¼»¯
 function init
 {
-	# åˆå§‹åŒ–æ–‡ä»¶å¤¹
+	# ³õÊ¼»¯ÎÄ¼þ¼Ð
 	mkdir -p "$HP_HOME_DIR";
 	mkdir -p "$HP_TEMP_DIR";
 	if [[ ! -f "$HP_CONF_FILE" ]];then
-		echo "æ— æ³•æ‰¾åˆ°é…ç½®æ–‡ä»¶:$HP_CONF_FILE";
+		echo "ÎÞ·¨ÕÒµ½ÅäÖÃÎÄ¼þ:$HP_CONF_FILE";
 		exit "$ERROR_CODE_CONF_NOT_FOUND";
 	fi
 
-	# è§£æžé…ç½®æ–‡ä»¶
+	# ½âÎöÅäÖÃÎÄ¼þ
 	prase_profile_conf_file;
 
-	# æž„é€ ç›‘æŽ§è„šæœ¬
+	# ¹¹Ôì¼à¿Ø½Å±¾
 	build_profile_shell;
 	
 }
 
-# ä¸»ç¨‹åºå¼€å§‹
+# Ö÷³ÌÐò¿ªÊ¼
 function main
 {
 
-	# è§£æžå‘½ä»¤è¡Œä¼ æ¥çš„å‚æ•°
-	typeset local cmd_arg_exp=$(getopt -o hr:f: --long help,repeat:,file: -- ${@})
-	if [[ $? != 0 ]];then
-		show_help;
-		exit "$ERROR_CODE_CHECK_ARGS";
-	fi
-	eval set -- "$cmd_arg_exp";
-
-	# æ‰§è¡Œè§£æžå‡ºæ¥çš„å‚æ•°
-	typeset -i local repeat_time=1;
-	while true;
+	# ½âÎöÃüÁîÐÐ´«À´µÄ²ÎÊý
+	while getopts hr:f: OPTION
 	do
-		case ${1} in
-			-r|--repeat)
-				REPEAT_TIMES="$2"
-				shift 2;
-			;;
-			-f|--file)
-				HP_CONF_FILE="$2"
-				shift 2;
-			;;
-			-h|--help)
+		case "$OPTION" in
+			h)
 				init;
 				show_help;
-				shift;
 				exit;
 			;;
-			--)
-				shift;
-				break;
+			f)
+				HP_CONF_FILE="$OPTARG";
 			;;
-		esac;
-	done;
-	
+			r)
+				REPEAT_TIMES="$OPTARG";
+			;;
+			\?)
+				show_help;
+				exit "$ERROR_CODE_CHECK_ARGS"
+			;;
+		esac
+	done
+
 	init;
 	repeat_profile;
 	finish;
 }
 
-# æ•æ‰CTRL+Cä¿¡å·
+# ²¶×½CTRL+CÐÅºÅ
 trap "finish" SIGINT
 main "$@";
 

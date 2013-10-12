@@ -2,7 +2,7 @@
 # author: dukun@taobao.com
 #   date: 2011-06-25
 
-typeset GROUP="logisticscenter"
+typeset GROUP="consign"
 
 armory -g "$GROUP"\
     |awk  'BEGIN{ORS=""}{if($0~/^\-/&&1!=NR)o=o"\n";if($1~/(nodename|dns_ip|state|rack|site|nodoegroup|vmparent|nodegroup)/)o=o$2"\t"}END{print o"\n"}'\

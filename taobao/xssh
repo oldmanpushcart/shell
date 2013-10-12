@@ -1,69 +1,120 @@
-#!/bin/ksh
-#
-# xssh shell
-# author: dukun@taobao.com
-# 
+#!/usr/bin/python
 
-# 定义错误码----------------------------------
-typeset -irx ERROR_CODE_CHECK_ARGS=1;      # CMD参数错误
-# ------------------------------------------
+# auth : dukun@taobao.com
+# xssh write by python
+# usage : 
+#   echo uptime | xssh -i 127.0.0.1 -p 22
+#   echo uptime | xssh --ip 127.0.0.1 --port 22
+#   xssh -h
+#   xssh --help
 
-# 帮助信息
-function show_help
-{
-	print "
-Example:
-	echo 127.0.0.1|xssh -c "uptime"
-	echo 127.0.0.1|xssh -c "uptime" -f batch.bat
-	xssh -h
-Args:
-	-h, --help:
-		show you How To Use.
-	-c
-		the command
-	-f, --file:
-		setup the batch command file
-"
-}
 
-# 主程序开始
-function main
-{
+import sys
+import getopt
+import StringIO
+import socket
+import ConfigParser
+import os
+import paramiko
+import string
 
-	# 执行解析出来的参数
-	typeset local xssh_command="";
-	typeset local xssh_batch_file="";
-	
-	# 解析命令行传来的参数
-	while getopts hf:c: OPTION
-	do
-		case "$OPTION" in
-			c)
-				xssh_command="$OPTARG";
-			;;
-			f)
-				xssh_batch_file="$OPTARG";
-			;;
-			\?)
-				show_help;
-				exit;
-			;;
-		esac;
-	done;
-	
-	# 如果没指定-c或-f参数则不需要执行
-	if [[ -z $xssh_command && -z $xssh_batch_file ]]; then
-		show_help;
-		exit;
-	fi
-	
-	# 从管道中读取参数信息
-	while read ip;
-	do
-		echo "====================$ip====================" 
-		echo "$xssh_command" | expect xssh.ex $HOME/.xssh "$ip"
-	done;
-	
-}
+# error code exception
+class XsshErrorCodeException(Exception):
+    message = None
+    def __init__(self, message):
+        self.message = message
+    def __str__(self):
+        return repr(self.message)
 
-main "$@"
+# usage for xssh
+def usage():
+    print """
+Show The Help!
+by dukun@taobao.com
+"""
+
+
+def parse_from_args():
+    ip = None
+    port = 22
+    timeout = 10
+    options,args = getopt.getopt(sys.argv[1:], "hp:i:t:", ["help", "ip=", "port=", "timeout="])
+    for key, value in options:  
+        if key in ["-h", "--help"]:
+            usage()
+            sys.exit(0) 
+        if key in ["-i", "--ip"]:
+            ip = value
+        if key in ["-p", "--port"]:
+            port = value
+        if key in ["-t", "--timeout"]:
+            timeout = value
+    if ip == None:
+        raise XsshErrorCodeException("the --ip/-i is required.")
+    return ip, port, string.atof(timeout)
+    
+
+def parse_from_xssh_file():
+    # read the xssh file from $HOME/.xssh
+    cf = ConfigParser.ConfigParser()
+    cf.read( os.path.expandvars('$HOME/.xssh'))
+    return cf.get("xssh", "username"), cf.get("xssh", "password") 
+
+def read_command_from_stdin():
+    cmd_buf = StringIO.StringIO()
+    cmd_buf.writelines(sys.stdin.readlines())
+    return cmd_buf.getvalue()
+
+def execute_on_ssh(_username, _password, ip, port, _timeout, cmd):
+    
+    # connect to ssh server
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(ip, username=_username, password=_password, timeout=_timeout)
+    chan = ssh.get_transport().open_session()
+    chan.settimeout(_timeout)
+    
+    # execute command
+    chan.exec_command(cmd)
+    
+    # To capture Data. Need to read the entire buffer to caputure output
+    contents_buf = StringIO.StringIO()
+    error_buf = StringIO.StringIO()
+    while not chan.exit_status_ready():
+        if chan.recv_ready():
+            data = chan.recv(1024)
+            while data:
+                contents_buf.write(data)
+                data = chan.recv(1024)
+        if chan.recv_stderr_ready():
+            error_buff = chan.recv_stderr(1024)
+            while error_buff:
+                error_buf.write(error_buff)
+                error_buff = chan.recv_stderr(1024)
+
+    return chan.recv_exit_status(), contents_buf.getvalue(), error_buf.getvalue() 
+    
+    
+# the main
+if __name__ == "__main__":
+    
+    status = 0
+    try:
+        ip, port, timeout = parse_from_args()
+        username, password = parse_from_xssh_file()
+        command = read_command_from_stdin()
+        status, contents, errors = execute_on_ssh(username,password,ip,port,timeout,command)
+        sys.stderr.write(errors)
+        sys.stdout.write(contents)
+    except XsshErrorCodeException, e:
+        sys.stderr.write("Error! ".join(e.message))
+        raise e
+    except paramiko.AuthenticationException:
+        sys.stderr.write("Error! username/password error, login failed.\n")
+        sys.exit(1)
+    except socket.error:
+        sys.stderr.write("Error! can't connect to remote host.\n")
+        sys.exit(1)
+    except KeyboardInterrupt:
+        pass
+

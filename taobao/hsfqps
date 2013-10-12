@@ -1,16 +1,16 @@
 #!/bin/ksh
 # author: dukun@taobao.com
 #   date: 2011-11-23
-#   desc: è®¡ç®—å‡ºä¸€æ‰¹æœºå™¨åœ¨æŸä¸€å¤©çš„QPSå³°å€¼
+#   desc: ¼ÆËã³öÒ»Åú»úÆ÷ÔÚÄ³Ò»ÌìµÄQPS·åÖµ
 #     eg: ichosts -g L1|hsfqps
 #     eg: ichosts -g L1|hsfqps -d 2011-11-11
 
-# è®¡ç®—QPSçš„ä¸´æ—¶è„šæœ¬
+# ¼ÆËãQPSµÄÁÙÊ±½Å±¾
 typeset HSFQPS_SHELL_FILE="/tmp/hsfqps_$$.cmd";
 typeset HSF_MONITOR_IPS_FILE="/tmp/hsfqps_ips_$$.cmd";
 typeset HSF_MONITOR_FILE="/home/admin/logs/monitor/monitor-app-org.eclipse.osgi.internal.baseadaptor.DefaultClassLoader.log";
 
-# æž„é€ ç›‘æŽ§æ‰§è¡Œè„šæœ¬
+# ¹¹Ôì¼à¿ØÖ´ÐÐ½Å±¾
 function build_hsfqps_shell_file
 {
 echo "cat $HSF_MONITOR_FILE|awk 'BEGIN{RS=\"\02\";FS=\"\01\";} \$1==\"HSF-ProviderDetail\" {m[\$7]+=\$5}END{for(i in m)printf(\"%s\t%s\n\",i,m[i])}'" > $HSFQPS_SHELL_FILE
@@ -18,11 +18,11 @@ echo "cat $HSF_MONITOR_FILE|awk 'BEGIN{RS=\"\02\";FS=\"\01\";} \$1==\"HSF-Provid
 
 
 
-# ä¸»ç¨‹åºå¼€å§‹
+# Ö÷³ÌÐò¿ªÊ¼
 function main
 {
 
-    # è§£æžå‘½ä»¤è¡Œä¼ æ¥çš„å‚æ•°
+    # ½âÎöÃüÁîÐÐ´«À´µÄ²ÎÊý
     typeset local cmd_arg_exp=$(getopt -o hd: --long help,date: -- ${@})
     if [[ $? != 0 ]];then
         show_help;
@@ -52,15 +52,12 @@ function main
 
     build_hsfqps_shell_file
 
-    while read ip;
-    do
-        echo $ip >> $HSF_MONITOR_IPS_FILE
-    done;
-    cat $HSF_MONITOR_IPS_FILE\
-        |jssh -f $HSFQPS_SHELL_FILE\
-        |grep -v "==="\
-        |awk '{m[$2]+=$3}END{for(i in m)print i"\t"m[i]}'\
-        |awk -F ":|\t" '{m[$1":"$2]+=$4}END{for(i in m)print i"\t"m[i]/120}'\
+	while read ip;
+	do
+		cat "$HSFQPS_SHELL_FILE"|xssh -i "$ip"
+	done\
+		|awk '{m[$2]+=$3}END{for(i in m)print i"\t"m[i]}'\
+    	|awk -F ":|\t" '{m[$1":"$2]+=$4}END{for(i in m)print i"\t"m[i]/120}'\
         |sort -nk2\
         |tail -1
 
