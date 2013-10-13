@@ -24,8 +24,8 @@ class XsshErrorCodeException(Exception):
 # usage for xssh
 def usage():
     print """
-autho : oldmanpushcart@gmail.com
-usage : 
+author : oldmanpushcart@gmail.com
+usage  : 
     echo uptime | xssh -i 127.0.0.1 -p 22
     echo uptime | xssh --ip 127.0.0.1 --port 22
     xssh -h
