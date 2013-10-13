@@ -16,6 +16,7 @@ function FindProxyForURL(url, host){
     var proxy_list = [
         "google.com",
         "google.com.hk",
+        "googleapis.com",
         "facebook.com",
         "twitter.com",
         "youtube.com",
