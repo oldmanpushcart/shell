@@ -1,0 +1,6 @@
+#!/bin/ksh
+
+while read ip;
+do
+	armory -i $ip |sed 's/host$//g'|awk '$1~/^nodegroup$/{print ip"\t"$2}' ip="$ip"
+done
