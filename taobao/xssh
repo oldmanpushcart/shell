@@ -2,11 +2,6 @@
 
 # auth : dukun@taobao.com
 # xssh write by python
-# usage : 
-#   echo uptime | xssh -i 127.0.0.1 -p 22
-#   echo uptime | xssh --ip 127.0.0.1 --port 22
-#   xssh -h
-#   xssh --help
 
 
 import sys
@@ -21,16 +16,20 @@ import string
 # error code exception
 class XsshErrorCodeException(Exception):
     message = None
-    def __init__(self, message):
-        self.message = message
+    def __init__(self, value):
+        self.value = value
     def __str__(self):
-        return repr(self.message)
+        return repr(self.value)
 
 # usage for xssh
 def usage():
     print """
-Show The Help!
-by dukun@taobao.com
+autho : oldmanpushcart@gmail.com
+usage : 
+    echo uptime | xssh -i 127.0.0.1 -p 22
+    echo uptime | xssh --ip 127.0.0.1 --port 22
+    xssh -h
+    xssh --help
 """
 
 
@@ -51,7 +50,7 @@ def parse_from_args():
             timeout = value
     if ip == None:
         raise XsshErrorCodeException("the --ip/-i is required.")
-    return ip, port, string.atof(timeout)
+    return ip, string.atoi(port), string.atof(timeout)
     
 
 def parse_from_xssh_file():
@@ -65,14 +64,13 @@ def read_command_from_stdin():
     cmd_buf.writelines(sys.stdin.readlines())
     return cmd_buf.getvalue()
 
-def execute_on_ssh(_username, _password, ip, port, _timeout, cmd):
+def execute_on_ssh(_username, _password, ip, _port, _timeout, cmd):
     
     # connect to ssh server
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(ip, username=_username, password=_password, timeout=_timeout)
+    ssh.connect(ip, port=_port, username=_username, password=_password, timeout=_timeout)
     chan = ssh.get_transport().open_session()
-    chan.settimeout(_timeout)
     
     # execute command
     chan.exec_command(cmd)
@@ -106,15 +104,17 @@ if __name__ == "__main__":
         status, contents, errors = execute_on_ssh(username,password,ip,port,timeout,command)
         sys.stderr.write(errors)
         sys.stdout.write(contents)
-    except XsshErrorCodeException, e:
-        sys.stderr.write("Error! ".join(e.message))
-        raise e
+    except getopt.GetoptError, ge:
+        print >> sys.stderr, "Error! {0}".format(ge)
+        sys.exit(1)
+    except XsshErrorCodeException, ece:
+        print >> sys.stderr, "Error! {0}".format(ece)
+        sys.exit(1)
     except paramiko.AuthenticationException:
-        sys.stderr.write("Error! username/password error, login failed.\n")
+        print >> sys.stderr, "Error! username/password error, login failed."
         sys.exit(1)
     except socket.error:
-        sys.stderr.write("Error! can't connect to remote host.\n")
+        print >> sys.stderr, "Error! can't connect to remote host."
         sys.exit(1)
     except KeyboardInterrupt:
         pass
-
