@@ -1,0 +1,130 @@
+#!/usr/bin/python
+
+# auth : dukun@taobao.com
+# xscp write by python
+# usage : 
+#	xscp -r /tmp 127.0.0.1:22:/tmp
+#	xscp /tmp/a.txt 127.0.0.1:22:/tmp/b.txt
+#	xscp -r -t 5 /tmp 127.0.0.1:22:/tmp
+#	xscp -r --timeout=5 /tmp 127.0.0.1:22:/tmp
+
+
+import sys
+import getopt
+import StringIO
+import socket
+import ConfigParser
+import os
+import string
+
+# error code exception
+class XsshErrorCodeException(Exception):
+    message = None
+    def __init__(self, message):
+        self.message = message
+    def __str__(self):
+        return repr(self.message)
+
+# The Location class
+class Location:
+	isLocal=None
+	ip=None
+	port=None
+	path=None
+	def __init__(self,pathExp):
+		self.isLocal = pathExp.find(":") < 0
+		if self.isLocal:
+			# prase local path
+			self.path=pathExp
+		else:
+			# parse remote path
+			remoteArgs = pathExp.split(":")[0:]
+			if len(remoteArgs) == 2:
+				self.ip = remoteArgs[0]
+				self.port = 22
+				self.path = remoteArgs[1]
+			elif len(remoteArgs) == 3:
+				self.ip = remoteArgs[0]
+				self.port = remoteArgs[1]
+				self.path = remoteArgs[2]
+			else:
+				raise XsshErrorCodeException("The remote location is illegal.")
+		
+
+# usage for xssh
+def usage():
+    print """
+Show The Help!
+by dukun@taobao.com
+"""
+
+
+def parse_from_args():
+
+	# define the args
+	isRecursion=False
+	timeout=10
+	fromLoc=None
+	toLoc=None
+	
+	# parse option
+	options,args = getopt.getopt(sys.argv[1:], "hrt:", ["help","timeout="])
+	for key, value in options:
+		if key in ["-h", "--help"]:
+			usage()
+			sys.exit(0)
+		elif key in ["-r"]:
+			isRecursion = True
+		elif key in ["-t","--timeout"]:
+			timeout = value
+	
+	# parse from,to
+	def remove_option_filter(e):
+		return e.find("-")!=0
+	removeOptionArgs = filter(remove_option_filter,sys.argv[1:])
+	fromLoc = removeOptionArgs[0]
+	toLoc = removeOptionArgs[1]
+	
+	return isRecursion, timeout, fromLoc, toLoc
+		
+def parse_from_xssh_file():
+    # read the xssh file from $HOME/.xssh
+    cf = ConfigParser.ConfigParser()
+    cf.read( os.path.expandvars('$HOME/.xssh'))
+    return cf.get("xssh", "username"), cf.get("xssh", "password") 
+    
+def execute_on_scp(_username, _password, ip, _port, _timeout, fromLoc, toLoc):
+    
+    # connect to ssh server
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(ip, port=_port, username=_username, password=_password, timeout=_timeout)
+    chan = ssh.get_transport().open_session()
+    
+    # execute command
+    chan.exec_command(cmd)
+    
+    # To capture Data. Need to read the entire buffer to caputure output
+    contents_buf = StringIO.StringIO()
+    error_buf = StringIO.StringIO()
+    while not chan.exit_status_ready():
+        if chan.recv_ready():
+            data = chan.recv(1024)
+            while data:
+                contents_buf.write(data)
+                data = chan.recv(1024)
+        if chan.recv_stderr_ready():
+            error_buff = chan.recv_stderr(1024)
+            while error_buff:
+                error_buf.write(error_buff)
+                error_buff = chan.recv_stderr(1024)
+
+    return chan.recv_exit_status(), contents_buf.getvalue(), error_buf.getvalue()     
+    			
+# the main
+if __name__ == "__main__":
+	isRecursion, timeout, fromLocExp, toLocExp = parse_from_args()
+	fromLoc = Location(fromLocExp)
+	toLoc = Location(toLocExp)
+	
+	print toLoc.path
