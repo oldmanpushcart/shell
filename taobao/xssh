@@ -12,10 +12,10 @@ import ConfigParser
 import os
 import paramiko
 import string
+import logging
 
 # error code exception
 class XsshErrorCodeException(Exception):
-    message = None
     def __init__(self, value):
         self.value = value
     def __str__(self):
@@ -35,9 +35,9 @@ usage  :
 
 def parse_from_args():
     ip = None
-    port = 22
-    timeout = 10
-    options,args = getopt.getopt(sys.argv[1:], "hp:i:t:", ["help", "ip=", "port=", "timeout="])
+    port = "22"
+    timeout = "10"
+    options, args = getopt.getopt(sys.argv[1:], "Dhp:i:t:", ["help", "ip=", "port=", "timeout=", "debug"])
     for key, value in options:  
         if key in ["-h", "--help"]:
             usage()
@@ -48,6 +48,8 @@ def parse_from_args():
             port = value
         if key in ["-t", "--timeout"]:
             timeout = value
+        if key in ["-D", "--debug"]:
+            logging.basicConfig(filename=os.path.join(os.getcwd(), 'xssh.log'), level=logging.DEBUG)
     if ip == None:
         raise XsshErrorCodeException("the --ip/-i is required.")
     return ip, string.atoi(port), string.atof(timeout)
@@ -56,7 +58,7 @@ def parse_from_args():
 def parse_from_xssh_file():
     # read the xssh file from $HOME/.xssh
     cf = ConfigParser.ConfigParser()
-    cf.read( os.path.expandvars('$HOME/.xssh'))
+    cf.read(os.path.expandvars('$HOME/.xssh'))
     return cf.get("xssh", "username"), cf.get("xssh", "password") 
 
 def read_command_from_stdin():
@@ -67,31 +69,48 @@ def read_command_from_stdin():
 def execute_on_ssh(_username, _password, ip, _port, _timeout, cmd):
     
     # connect to ssh server
+    byte_len = 1024
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(ip, port=_port, username=_username, password=_password, timeout=_timeout)
-    chan = ssh.get_transport().open_session()
+    logging.debug("ssh connected.")
     
-    # execute command
-    chan.exec_command(cmd)
-    
-    # To capture Data. Need to read the entire buffer to caputure output
-    contents_buf = StringIO.StringIO()
-    error_buf = StringIO.StringIO()
-    while not chan.exit_status_ready():
-        if chan.recv_ready():
-            data = chan.recv(1024)
-            while data:
-                contents_buf.write(data)
-                data = chan.recv(1024)
-        if chan.recv_stderr_ready():
-            error_buff = chan.recv_stderr(1024)
-            while error_buff:
-                error_buf.write(error_buff)
-                error_buff = chan.recv_stderr(1024)
+    try:
+        session = ssh.get_transport().open_session()
+        logging.debug("ssh session opened.")
+        
+        try:
+            # execute command
+            session.exec_command(cmd)
+            logging.debug("session command exec done.")
+            
+            # To capture Data. Need to read the entire buffer to caputure output
+            contents_buf = StringIO.StringIO()
+            error_buf = StringIO.StringIO()
+            while not session.exit_status_ready():
+                if session.recv_ready():
+                    data = session.recv(byte_len)
+                    logging.debug("recv ready...data.lenght=%s" %(len(data)))
+                    while data:
+                        contents_buf.write(data)
+                        data = session.recv(byte_len)
+                if session.recv_stderr_ready():
+                    data = session.recv_stderr(byte_len)
+                    logging.debug("recv err ready...data.lenght=%s" %(len(data)))
+                    while data:
+                        error_buf.write(data)
+                        data = session.recv_stderr(byte_len)
+                #logging.debug("waiting for exit_status_ready...")
+        finally:
+            session.close()
+            logging.debug("ssh session closed.")
+        
+        logging.debug("exec_command finished. exit_status=%s" %(session.recv_exit_status()))    
+        return session.recv_exit_status(), contents_buf.getvalue(), error_buf.getvalue()         
+    finally:
+        ssh.close()
+        logging.debug("ssh closed.")
 
-    return chan.recv_exit_status(), contents_buf.getvalue(), error_buf.getvalue() 
-    
     
 # the main
 if __name__ == "__main__":
@@ -101,14 +120,14 @@ if __name__ == "__main__":
         ip, port, timeout = parse_from_args()
         username, password = parse_from_xssh_file()
         command = read_command_from_stdin()
-        status, contents, errors = execute_on_ssh(username,password,ip,port,timeout,command)
+        status, contents, errors = execute_on_ssh(username, password, ip, port, timeout, command)
         sys.stderr.write(errors)
         sys.stdout.write(contents)
     except getopt.GetoptError, ge:
-        print >> sys.stderr, "Error! {0}".format(ge)
+        print >> sys.stderr, "Error! %s" %(ge)
         sys.exit(1)
     except XsshErrorCodeException, ece:
-        print >> sys.stderr, "Error! {0}".format(ece)
+        print >> sys.stderr, "Error! %s" %(ece)
         sys.exit(1)
     except paramiko.AuthenticationException:
         print >> sys.stderr, "Error! username/password error, login failed."
