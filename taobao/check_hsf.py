@@ -85,7 +85,7 @@ def cat_calc(info, d):
             key_rt = float(x[i][j]['rt_sum']) / x[i][j]['qps_sum']
             key_rt = oo(key_rt)
             o[i][j] = {'qps':key_qps, 'rt':key_rt}
-    title = info[0] + '/' + os.uname()[1] + '\t' + 'thsf' + '\t'
+    title = info[0] + '\t' + os.uname()[1] + '\t' + 'thsf' + '\t'
     P_qps = float(o['HSF-ProviderDetail']['total']['qps'])
     C_qps = float(o['HSF-Consumer']['total']['qps'])
     P_rt = float(o['HSF-ProviderDetail']['total']['rt'])
