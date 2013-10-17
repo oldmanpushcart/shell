@@ -108,7 +108,7 @@ def cat_calc(info, d):
 
 
 def printinfo(output, options):
-    print '%(title)sP_qps=%(P_qps)0.2f P_rt=%(P_rt)0.2f C_qps=%(C_qps)0.2f C_rt=%(C_rt)0.2f P_Fail_Rate=%(P_Fail_Rate)0.2f C_Fail_Rate=%(C_Fail_Rate)0.2f' % output
+    print '%(title)sP_qps=%(P_qps)0.2f\tP_rt=%(P_rt)0.2f\tC_qps=%(C_qps)0.2f\tC_rt=%(C_rt)0.2f\tP_Fail_Rate=%(P_Fail_Rate)0.2f\tC_Fail_Rate=%(C_Fail_Rate)0.2f' % output
     if options.detail is True:
         def _rjust(x, y):return "%s" % x.rjust(y)
         def _ljust(x, y):return "%s" % x.ljust(y)
