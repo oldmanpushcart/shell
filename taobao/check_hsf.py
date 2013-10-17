@@ -135,8 +135,6 @@ def main():
 
     if os.path.isfile(hsf_log):
         if options.all is False:
-            print '.1.3.6.1.4.1.2021.1000'
-            print 'string'
             l = grep_info(last(hsf_log))
 
             if not l:
