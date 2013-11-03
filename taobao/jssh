@@ -1,0 +1,158 @@
+#!/bin/ksh
+
+
+# define the job file
+typeset _JOB_FILE=/tmp/_job_jssh.$$
+
+# add a job into job arrays
+#   args
+#     $1 : the function for job run
+function job
+{
+	typeset local pid=$(exec sh -c 'echo $PPID')
+	typeset local token=$pid"-"$(date +"%Y%m%d%H%M%S")
+	echo $token >> $_JOB_FILE
+	$1 "$@"
+	echo $token >> $_JOB_FILE
+}
+
+# waiting for jobs done.
+function wait_for_job_done
+{
+	while [[ True ]];
+	do
+		typeset local jc=$(cat $_JOB_FILE)
+		typeset local wc=$(echo "$jc"|sort|uniq -c|awk '$1==1'|wc -l)
+		#typeset local total=$(echo "$jc"|sort|uniq|wc -l)
+		if [[ $wc == 0  ]];then
+			break;
+		fi
+		sleep 1
+	done
+}
+
+
+function show_help
+{
+	print "
+例子: 
+	jssh -h
+	echo 172.24.24.92|jssh -c \"uptime\"
+	echo 172.24.24.92|jssh -f \"./test.bat\"
+参数:
+	-h:
+		输出帮助说明!
+	-c:
+		远程执行命令
+	-f:
+		远程执行脚本文件
+	-p:
+		并发执行线程数，默认1
+	"
+}
+
+# 主程序开始
+function main
+{
+	typeset local IS_COMMAND=false
+	typeset local IS_BATFILE=false
+	typeset local PARALLEL=1
+
+	# 解析命令行传来的参数
+	while getopts hp:c:f: OPTION
+	do
+		case "$OPTION" in
+			f)
+				IS_BATFILE=true
+				BATFILE_PATH="$OPTARG"
+			;;
+			c)
+				IS_COMMAND=true
+				COMMAND="$OPTARG"
+			;;
+			p)
+				PARALLEL="$OPTARG"
+			;;
+			h|\?)
+				show_help
+				exit
+			;;
+		esac
+	done
+
+	if [[ $IS_COMMAND != true && $IS_BATFILE != true ]];then
+		echo "ERROR! the arguments (-c/-f) was missed." > /dev/stderr
+		show_help
+		exit -1
+	fi
+
+	rm -f $_JOB_FILE
+	touch $_JOB_FILE
+
+	typeset local count=0;
+	while read ip;
+	do
+		job do_xssh $IS_COMMAND $IS_BATFILE "$ip" "$COMMAND" "$BATFILE_PATH" &
+		count=$((count+1))
+		if [[ $count -ge $PARALLEL ]];then
+			count=0
+			wait_for_job_done
+		fi
+	done
+
+	sleep 1
+	wait_for_job_done
+	finish
+}
+
+# do the xssh
+#	$1 : name of function
+#	$2 : IS_COMMAND
+#	$3 : IS_BATFILE
+#	$4 : IP
+#	$5 : COMMAND
+#	$6 : BATFILE_PATH
+function do_xssh
+{
+	typeset local IS_COMMAND=$2
+	typeset local IS_BATFILE=$3
+	typeset local ip="$4"
+	typeset local COMMAND="$5"
+	typeset local BATFILE_PATH="$6"
+
+	typeset local content=""
+	typeset local re_try=0
+	while [[ True ]];
+	do
+		if [[ $IS_COMMAND = true ]];then
+			typeset local command_content="echo -e '========== $ip ==========';"$COMMAND
+			content=$(echo "$command_content"|xssh -i "$ip")
+		elif [[ $IS_BATFILE = true ]];then
+			typeset local batfile_content="echo -e '========== $ip ==========';"$(cat "$BATFILE_PATH")
+			content=$(echo "$batfile_content"|xssh -i "$ip")
+		else
+			content="ERROR for get content!"
+		fi
+		if [[ -z $content && $re_try -lt 5 ]];then
+			re_try=$(($re_try+1))
+			continue
+		fi
+		break
+	done
+	echo "$content"
+}
+
+function finish
+{
+	cat $_JOB_FILE|sort|uniq -c|awk '$1==1{print $2}'|awk -F "-" '{print $1}'|while read stop_pid;
+	do
+		kill -9 $stop_pid
+	done
+	rm -f $_JOB_FILE
+	echo "FINISH..."
+	exit 0
+}
+
+# 捕捉CTRL+C信号
+trap "finish" SIGINT
+main "$@"
