@@ -22,6 +22,7 @@ function FindProxyForURL(url, host){
         "youtube.com",
         "gstatic.com",
         "ytimg.com",
+        "python.com",
     ];
     
     for( index=0;index<proxy_list.length;index++ ) {
