@@ -4,7 +4,7 @@
 # date     : 2014-01-16
 # version  : 0.0.7
 
-typeset FIND_DIR=$1
+typeset FIND_DIR=${1}
 typeset JARDIFF_TMP_FILE=/tmp/jardiff.$$
 
 # the main function
@@ -12,7 +12,7 @@ function _main
 {
 
 	find ${FIND_DIR} -type f -iname *.jar\
-		|while read f;do \
+		|while read f;do\
 			unzip -v ${f}\
 				|awk '$7>0&&$8~/class$/{print f"\t"$7"\t"$8}' f=${f};\
 		done > ${JARDIFF_TMP_FILE}
