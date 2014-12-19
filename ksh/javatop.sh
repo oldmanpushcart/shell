@@ -8,6 +8,9 @@ typeset top=${1:-10}
 typeset pid=${2:-$(pgrep -u $USER java)}
 typeset tmp_file=/tmp/java_${pid}_$$.trace
 
+# fix for alibaba-inc.com
+export JAVA_HOME=/opt/taobao/java
+
 $JAVA_HOME/bin/jstack $pid > $tmp_file
 ps H -eo user,pid,ppid,tid,time,%cpu --sort=%cpu --no-headers\
 	| tail -$top\
