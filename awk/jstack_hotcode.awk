@@ -16,8 +16,8 @@
 	
 		// take nid
 		if(match($0,/nid=0x[a-z0-9]+/)){
-		nid=substr($0,RSTART,RLENGTH)
-        }
+			nid=substr($0,RSTART,RLENGTH)
+		}
 
 	}
 
